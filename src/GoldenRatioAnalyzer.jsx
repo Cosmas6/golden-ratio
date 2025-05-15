@@ -26,7 +26,7 @@ const GoldenRatioAnalyzer = () => {
     return Math.floor((price * Math.pow(10, pipSize)) % 10);
   };
 
-    // Connect to WebSocket
+  // Connect to WebSocket
   useEffect(() => {
     // Use the original app_id since it's confirmed to be accurate
     let newSocket = null;
@@ -153,45 +153,6 @@ const GoldenRatioAnalyzer = () => {
     };
   }, []);
 
-    // Handle refresh button click
-  const handleRefresh = () => {
-    if (socket && connected) {
-      setLoading(true);
-      requestTickHistory(socket, { count: COUNT });
-    }
-  };now() // Use current timestamp to ensure unique req_id
-        };
-        
-        console.log('Sending tick history request:', request);
-        socket.send(JSON.stringify(request));
-      } catch (err) {
-        console.error('Error sending request:', err);
-        setError(`Failed to send request: ${err.message}`);
-        setLoading(false);
-      }
-    };
-    
-    console.log('Connected to API, requesting tick history...');
-    requestTickHistory();
-    
-    // Set up interval to request fresh data every 30 seconds
-    const dataIntervalId = setInterval(() => {
-      if (connected) {
-        console.log('Refreshing data...');
-        requestTickHistory();
-      }
-    }, 30000);
-    
-    // Store the interval for cleanup
-    window.dataIntervalId = dataIntervalId;
-    
-    return () => {
-      if (window.dataIntervalId) {
-        clearInterval(window.dataIntervalId);
-      }
-    };
-  }, [socket, connected]);
-
   // Analyze the tick data in relation to golden ratio
   const analyzeData = (digits) => {
     if (!digits || digits.length === 0) return;
@@ -279,17 +240,14 @@ const GoldenRatioAnalyzer = () => {
   const handleRefresh = () => {
     if (socket && connected) {
       setLoading(true);
-      const request = {
-        ticks_history: 'R_50',
-        adjust_start_time: 1,
-        count: COUNT,
-        end: 'latest',
-        start: 1,
-        style: 'ticks',
-        req_id: 1
-      };
       
-      socket.send(JSON.stringify(request));
+      try {
+        requestTickHistory(socket, { count: COUNT });
+      } catch (err) {
+        console.error('Error sending request:', err);
+        setError(`Failed to send request: ${err.message}`);
+        setLoading(false);
+      }
     }
   };
 
